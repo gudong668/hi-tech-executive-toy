@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">发送好友请求</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label>请求信息</label>
+					<input type="text" id="req_info" class="mui-input-clear" placeholder="告诉对方你是哪一位？">
+				</div>
+				<div class="mui-input-row">
+					<label>对方备注</label>
+					<input type="text" id="remark" class="mui-input-clear" placeholder="你要怎么称呼他">
+				</div>
+				<div class="mui-button-row">
+					<button type="button" class="mui-btn mui-btn-primary" id="add_btn">发送请求</button>
+					<button type="button" class="mui-btn mui-btn-danger mui-action-back">取消</button>
+				</div>
+			</form>
+		</div>
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			var Sdata = null;
+			mui.plusReady(function () {
+			    Sdata = plus.webview.currentWebview();
+			    
+			})
+			
+			document.getElementById('add_btn').addEventListener('tap',function () {
+				var req_info = document.getElementById("req_info").value;
+				var remark = document.getElementById("remark").value;
+				if(Sdata.add_id){
+					var user_id = Sdata.add_id
+				}else{
+					var user_id = window.localStorage.getItem("user_id")
+				}
+				console.log(JSON.stringify(Sdata))
+			    mui.post(window.serv + '/add_req',{
+			    		add_user:user_id,
+			    		toy_id:Sdata.toy_id,
+			    		add_type:Sdata.add_type,
+			    		req_info:req_info,
+			    		remark:remark
+			    	},function(data){
+			    		console.log(JSON.stringify(data));
+			    	},'json'
+			    );    
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,63 @@
+{
+  "index.html": {
+    "resources": [
+      "main.html"
+    ],
+    "refer": [
+      "main.html",
+      "login.html",
+      "user_info.html",
+      "message.html",
+      "req_list.html"
+    ]
+  },
+  "main.html": {
+    "refer": [
+      "player.html"
+    ]
+  },
+  "login.html": {
+    "refer": [
+      "reg.html",
+      "user_info.html"
+    ]
+  },
+  "user_info.html": {
+    "refer": [
+      "login.html",
+      "toy_manager.html"
+    ]
+  },
+  "toy_manager.html": {
+    "refer": [
+      "scan.html",
+      "toy_info.html"
+    ]
+  },
+  "scan.html": {
+    "refer": [
+      "bind_toy.html",
+      "add_req.html"
+    ]
+  },
+  "bind_toy.html": {
+    "refer": [
+      "toy_manager.html"
+    ]
+  },
+  "message.html": {
+    "refer": [
+      "chat.html"
+    ]
+  },
+  "toy_info.html": {
+    "refer": [
+      "scan.html"
+    ]
+  },
+  "req_list.html": {
+    "refer": [
+      "acc_ref_req.html"
+    ]
+  }
+}

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">请求详情</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-body">
+
+						<p class="mui-ellipsis">请求信息</p>
+						<span id="req_info"></span>
+
+					</div>
+				</li>
+			</ul>
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label>好友备注</label>
+					<input type="text" id="remark" class="mui-input-clear" placeholder="给好友加个称呼">
+				</div>
+			</form>
+			<div class="mui-button-row">
+				<button type="button" class="mui-btn mui-btn-primary" id="acc">同意</button>
+				<button type="button" class="mui-btn mui-btn-red" id="ref">拒绝</button>
+				<button type="button" class="mui-btn mui-btn-yellow mui-action-back">取消</button>
+			</div>
+		</div>
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			var Sdata = null;
+			mui.plusReady(function() {
+				Sdata = plus.webview.currentWebview();
+				document.getElementById("req_info").innerText = Sdata.req_info;
+			});
+
+			document.getElementById('acc').addEventListener('tap', function() {
+				mui.post(window.serv + '/acc_req',{
+						req_id:Sdata._id,
+						remark:document.getElementById("remark").value
+					},function(data){
+						
+					},'json'
+				);
+			})
+
+			document.getElementById('ref').addEventListener('tap', function() {
+				mui.post(window.serv + '/ref_req',{
+						req_id:Sdata._id
+					},function(data){
+						
+					},'json'
+				);
+			})
+		</script>
+	</body>
+
+</html>

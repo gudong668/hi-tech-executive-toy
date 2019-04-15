@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">创建并绑定你的玩具</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label>玩具昵称</label>
+					<input type="text" id="toy_name" class="mui-input-clear" placeholder="玩具的名字">
+				</div>
+				<div class="mui-input-row">
+					<label>主人昵称</label>
+					<input type="text" id="baby_name" class="mui-input-clear" placeholder="小主人的名字">
+				</div>
+				<div class="mui-input-row">
+					<label>对您称呼</label>
+					<input type="text" id="remark" class="mui-input-clear" placeholder="小主人对您的称呼">
+				</div>
+				<div class="mui-button-row">
+					<button type="button" class="mui-btn mui-btn-primary" id="bind_btn">绑定</button>
+					<button type="button" class="mui-btn mui-btn-danger mui-action-back">取消</button>
+				</div>
+			</form>
+		</div>
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			var Sdata = null;
+			mui.plusReady(function() {
+				Sdata = plus.webview.currentWebview();
+			})
+			document.getElementById('bind_btn').addEventListener('tap', function() {
+				var toy_name = document.getElementById("toy_name").value;
+				var baby_name = document.getElementById("baby_name").value;
+				var remark = document.getElementById("remark").value;
+
+				mui.post(window.serv + '/bind_toy', {
+					toy_name: toy_name,
+					baby_name: baby_name,
+					remark: remark,
+					device_key: Sdata.device_key,
+					user_id: window.localStorage.getItem("user_id")
+				}, function(data) {
+					if(data.CODE == 0) {
+						//			     			mui.back();
+						mui.openWindow({
+							url: "toy_manager.html",
+							id: "toy_manager.html",
+							createNew:true
+						})
+					}
+				}, 'json');
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">好友列表</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view" id="friend_list">
+			</ul>
+		</div>
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.back = function(){};
+			var Sdata = null;
+			var index = null;
+			mui.plusReady(function(){
+				Sdata = plus.webview.currentWebview();
+				index = plus.webview.getWebviewById("H5945F808");
+				mui.post(window.serv + '/friend_list',{
+						_id:window.localStorage.getItem("user_id")
+					},function(data){
+						console.log(JSON.stringify(data));
+						for (var i = 0; i < data.DATA.length; i++) {
+							create_friend(data.DATA[i]);
+						}
+					},'json'
+				);
+			})
+
+			function create_friend(friend_info) {
+				
+				var span = document.createElement("span");
+				span.className = "mui-badge mui-badge-red";
+				span.innerText = Sdata.chat[friend_info.friend_id];
+				friend_info.self_avatar = Sdata.avatar;
+				var li = document.createElement("li");
+				li.className = "mui-table-view-cell mui-media";
+				var a = document.createElement("a");
+				a.onclick = function() {
+					span.innerText = 0;
+					mui.fire(index,'cut',{cut:Sdata.chat[friend_info.friend_id]})
+					mui.openWindow({
+						url: "chat.html",
+						id: "chat.html",
+						extras: friend_info
+					});
+				};
+				var img = document.createElement("img");
+				img.className = "mui-media-object mui-pull-left";
+				img.src = "avatar/"+friend_info.friend_avatar;
+				var div = document.createElement("div");
+				div.className = "mui-media-body";
+				div.innerText = friend_info.friend_remark;
+				var p = document.createElement("p");
+				p.className = "mui-ellipsis";
+				p.innerText = friend_info.friend_nick;
+
+				li.appendChild(a);
+				a.appendChild(img);
+				a.appendChild(div);
+				a.appendChild(span);
+				div.appendChild(p);
+
+				document.getElementById("friend_list").appendChild(li);
+
+			}
+		</script>
+	</body>
+
+</html>

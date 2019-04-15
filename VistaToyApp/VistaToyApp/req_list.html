@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <link rel="stylesheet" type="text/css" href="css/mui.css"/>
+</head>
+<body>
+    <header class="mui-bar mui-bar-nav">
+        <h1 class="mui-title">玩具的好友请求</h1>
+    </header>
+    <div class="mui-content">
+        <ul class="mui-table-view" id="req_list">
+
+        </ul>
+    </div>
+    <script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+	    mui.init();
+	    mui.back = function(){};
+	    mui.post(window.serv + '/req_list',{
+	    		user_id : window.localStorage.getItem("user_id")
+	    	},function(data){
+	    		console.log(JSON.stringify(data));
+	    		for (var i = 0; i < data.DATA.length; i++) {
+	    			create_req(data.DATA[i]);
+	    		} 
+	    	},'json'  
+	    );
+	    
+	    function create_req(req){   
+        var li = document.createElement("li");
+        li.className = "mui-table-view-cell mui-media";
+        var a = document.createElement("a");
+        a.onclick = function(){
+        	mui.openWindow({
+        		url:"acc_ref_req.html",
+        		id:"acc_ref_req.html",
+        		extras:req
+        	});
+        };
+        var img = document.createElement("img");
+        img.className = "mui-media-object mui-pull-left";
+        img.src = "avatar/"+req.avatar;
+        var div = document.createElement("div");
+        div.className = "mui-media-body";
+        div.innerText = req.nickname;
+        var p = document.createElement("p");
+        p.className="mui-ellipsis";
+        p.innerText = "添加"+req.toy_name +"为好友";
+        
+        li.appendChild(a); 
+        a.appendChild(img);
+        a.appendChild(div);
+        div.appendChild(p);
+        
+        document.getElementById("req_list").appendChild(li);
+        
+    }
+    </script>
+</body>
+</html>

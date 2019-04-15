@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">用户登陆</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label>用户名</label>
+					<input type="text" id="username" class="mui-input-clear" placeholder="请输入用户名">
+				</div>
+				<div class="mui-input-row">
+					<label>密码</label>
+					<input type="password" id="pwd" class="mui-input-password" placeholder="请输入密码">
+				</div>
+				<div class="mui-button-row">
+					<button type="button" class="mui-btn mui-btn-primary" id="login_btn">登陆</button>
+					<button type="button" class="mui-btn mui-btn-danger" id="reg_btn">注册</button>
+				</div>
+			</form>
+		</div>
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/md5.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.back = function() {
+				mui.toast('再按就给你关掉');
+			};
+
+			document.getElementById('reg_btn').addEventListener('tap', function() {
+				mui.openWindow({
+					url: 'reg.html',
+					id: 'reg.html'
+				});
+			})
+			
+			document.getElementById('login_btn').addEventListener('tap',function () {
+			    var username = document.getElementById("username").value;
+			    var pwd = document.getElementById("pwd").value;
+			    mui.post(window.serv + '/login',{
+			    		username:username,
+			    		password:hex_md5(pwd)
+			    	},function(data){
+			    		console.log(JSON.stringify(data));
+			    		mui.toast(data.MSG);
+			    		if(data.CODE == 0){
+			    			window.localStorage.setItem("user_id",data.DATA._id);
+			    			mui.openWindow({
+								url: 'user_info.html',
+								id: 'user_info.html',
+								styles:{
+									top:"0px",
+									bottom:"50px"
+								},
+								extras:data.DATA
+							});
+			    		}
+			    	},'json'
+			    );
+			})
+		</script>
+	</body>
+
+</html>

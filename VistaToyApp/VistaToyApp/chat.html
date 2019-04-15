@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+		<link rel="stylesheet" type="text/css" href="css/chat.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="title"></h1>
+		</header>
+		<div class="mui-content" id="chat_list">
+
+		</div>
+
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" id="speech">
+				<span class="mui-icon mui-icon-speech"></span>
+				<span class="mui-tab-label">按住开始说话</span>
+			</a>
+		</nav>
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				gestureConfig: {
+					tap: true,
+					doubletap: true,
+					longtap: false,
+					swipe: true,
+					drag: true,
+					hold: true,
+					release: true
+				}
+			});
+
+			var Sdata = null;
+			mui.plusReady(function() {
+				Sdata = plus.webview.currentWebview();
+				document.getElementById("title").innerText = Sdata.friend_remark + " - " + Sdata.friend_nick;
+
+				mui.post(window.serv + '/chat_list', {
+					chat_id: Sdata.friend_chat,
+					from_user:Sdata.friend_id,
+					to_user:window.localStorage.getItem("user_id")
+				}, function(data) {
+					console.log(JSON.stringify(data));
+					for(var i = 0; i < data.DATA.length; i++) {
+						chat_url = window.chat_serv + data.DATA[i].chat
+						if(data.DATA[i].from_user == window.localStorage.getItem("user_id")) {
+							create_chat(Sdata, chat_url, "self")
+						} else {
+							create_chat(Sdata, chat_url, "")
+						}
+
+					}
+				}, 'json');
+
+			})
+			var reco = null;
+			document.getElementById('speech').addEventListener('hold', function() {
+				mui.toast('按住了');
+				reco = plus.audio.getRecorder();
+				reco.record({
+					filename: "_doc/audio/",
+					format: "amr"
+				}, function(file_path) {
+					//					console.log(args_str);
+					create_upload_task(file_path);
+				})
+			});
+
+			document.getElementById('speech').addEventListener('release', function() {
+				mui.toast("松开了");
+				reco.stop();
+			});
+
+			function create_chat(chat_info, pppp, self) {
+
+				console.log(JSON.stringify(chat_info));
+
+				var div = document.createElement("div");
+				var span = document.createElement("span");
+				var img = document.createElement("img");
+				var div2 = document.createElement("div");
+
+				div.className = "leftd";
+				span.className = "leftd_h";
+				div2.className = "left speech";
+				img.src = "avatar/" + chat_info.friend_avatar;
+
+				if(self) {
+					div.className = "rightd";
+					span.className = "rightd_h";
+					div2.className = "right speech";
+					img.src = "avatar/" + chat_info.self_avatar;
+				}
+
+				div2.innerText = "点击播放";
+				div2.onclick = function() {
+					var player = plus.audio.createPlayer(pppp);
+					player.play();
+				}
+
+				div.appendChild(span);
+				span.appendChild(img);
+				div.appendChild(div2);
+
+				document.getElementById("chat_list").appendChild(div);
+			}
+
+			function create_upload_task(file_path) {
+				// 上传文件~
+				var up = plus.uploader.createUpload(
+					window.serv + "/app_uploader", {},
+					function(upload, status) {
+						if(status == 200) {
+							//发送消息给WebToy
+							//upload.responseText
+							var res = JSON.parse(upload.responseText);
+							var index = plus.webview.getWebviewById("H5945F808");
+							mui.fire(index, 'send_chat', {
+								chat: res.DATA.filename,
+								to_user: Sdata.friend_id,
+								from_user: window.localStorage.getItem("user_id")
+							})
+
+							create_chat(Sdata, file_path, "self")
+
+						}
+					});
+
+				up.addData("user_id", window.localStorage.getItem("user_id"));
+				up.addData("to_user", Sdata.friend_id);
+				up.addFile(file_path, {
+					key: "reco_file"
+				});
+				up.start();
+			}
+
+			document.addEventListener("add_chat", function(event) {
+				var recv_msg = event.detail;
+				if(recv_msg.from_user == Sdata.friend_id) {
+					create_chat(Sdata, window.chat_serv + recv_msg.chat, "");
+				}
+			})
+		</script>
+	</body>
+
+</html>

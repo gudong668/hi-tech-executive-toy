@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">这是你的全部资产请小心保管</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view" id="toy_list">
+				<li class="mui-table-view-cell mui-media">
+					<a id="scan">
+						<img class="mui-media-object mui-pull-left" src="image/add.jpg">
+						<div class="mui-media-body">
+							点击扫描二维码
+							<p class="mui-ellipsis">赶紧花钱买一个玩具吧！！！！！</p>
+						</div>
+					</a>
+				</li>
+
+			</ul>
+		</div>
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function() {
+				mui.post(window.serv + '/toy_list', {
+					_id: window.localStorage.getItem("user_id")
+				}, function(data) {
+					console.log(JSON.stringify(data));
+					
+					for (var i = 0; i < data.DATA.length; i++) {
+						create_toy(data.DATA[i]);
+					}
+					
+				}, 'json');
+			})
+			document.getElementById('scan').addEventListener('tap', function() {
+				mui.openWindow({
+					url: "scan.html",
+					id: "scan.html",
+					extras:{type:"app"}
+				})
+			})
+
+			function create_toy(toy) {
+				var li = document.createElement("li");
+				li.className = "mui-table-view-cell mui-media";
+				var a = document.createElement("a");
+				a.onclick = function() {
+					mui.openWindow({
+						url: "toy_info.html",
+						id: "toy_info.html",
+						extras: toy
+					});
+				};
+				var img = document.createElement("img");
+				img.className = "mui-media-object mui-pull-left";
+				img.src = "avatar/"+toy.avatar;
+				var div = document.createElement("div");
+				div.className = "mui-media-body";
+				div.innerText = toy.toy_name;
+				var p = document.createElement("p");
+				p.className = "mui-ellipsis";
+				p.innerText = toy.baby_name;
+
+				li.appendChild(a);
+				a.appendChild(img);
+				a.appendChild(div);
+				div.appendChild(p);
+
+				document.getElementById("toy_list").appendChild(li);
+
+			}
+		</script>
+	</body>
+
+</html>

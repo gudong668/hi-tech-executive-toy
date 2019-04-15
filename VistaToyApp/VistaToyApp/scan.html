@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8" />
+		<title>Document</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/mui.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">请开始怼你的玩具二维码</h1>
+		</header>
+		<div class="mui-content">
+			<div id="bcid" style="width: 100%;height:750px;"></div>
+		</div>
+		<script src="js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			var Sdata = null;
+			function onmarked(type, result) {
+				console.log(result);
+			
+				mui.post(window.serv + '/scan_qr',{
+						device_key:result
+					},function(data){
+						mui.toast(data.MSG);
+						// 扫码成功 开启绑定流程！
+						if(data.CODE == 0){ 
+							mui.openWindow({
+								url: "bind_toy.html",
+								id: "bind_toy.html",
+								extras:data.DATA
+							})
+						}
+						// 扫码也成功，但是已经被绑定过了
+						else if(data.CODE == 2){
+							// 开启添加好友的流程
+							var s = Sdata.type; // app or toy
+							console.log(s);
+							var toy_data = {
+								toy_id: data.DATA.toy_id,
+								add_id:Sdata.create_toy_id,
+								"add_type":s,
+							}
+							mui.openWindow({
+								url: "add_req.html",
+								id: "add_req.html",
+								extras:toy_data
+							})
+							
+						}
+						// 扫描失败，请不要瞎78乱扫
+						else{
+							mui.back();
+						}
+					},'json'
+				);
+			
+			}
+
+			mui.plusReady(function() {
+				Sdata = plus.webview.currentWebview();
+				var scan = new plus.barcode.Barcode("bcid");
+				scan.start();
+				onmarked("qr","afc59916257ae8a2b6ccdfb9fd273373");
+//				scan.onmarked = onmarked;
+			})
+		</script>
+	</body>
+
+</html>
